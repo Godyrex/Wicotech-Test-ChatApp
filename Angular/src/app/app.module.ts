@@ -11,9 +11,10 @@ import { RegisterComponent } from './register/register.component';
 import { ChatComponent } from './chat/chat.component';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { PrivateChatComponent } from './private-chat/private-chat.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, RegisterComponent, ChatComponent],
+  declarations: [AppComponent, LoginComponent, RegisterComponent, ChatComponent, PrivateChatComponent],
   imports: [BrowserModule,CommonModule, RouterOutlet, RouterLink, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [ChatService, AuthService],
   bootstrap: [AppComponent],

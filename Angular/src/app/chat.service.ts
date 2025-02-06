@@ -32,9 +32,9 @@ export class ChatService {
     }
   }
 
-  sendMessage(message: string, username: string) {
+  sendMessage(message: string, from: string) {
     if (this.socket) {
-      this.socket.emit('sendMessage', { text: message, username });
+      this.socket.emit('sendMessage', { text: message, from });
     }
   }
 

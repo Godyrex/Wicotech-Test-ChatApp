@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { io, Socket } from 'socket.io-client';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,9 @@ export class AuthService {
         this.isAuthenticatedSubject.next(true);
       })
     );
+  }
+  users(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users`);
   }
 
   saveToken(token: string) {

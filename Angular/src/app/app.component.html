@@ -18,4 +18,17 @@
     </div>
   </div>
 </nav>
-<router-outlet></router-outlet>
+<div class="container-fluid" *ngIf="authenticated">
+  <div class="row">
+    <div class="col-3">
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action" [routerLinkActive]="['active']" [routerLink]="['/chat']">Group Chat</a>
+        <a class="list-group-item list-group-item-action" *ngFor="let user of users" [routerLinkActive]="['active']" [routerLink]="['/chat', user.username]">{{ user.username }}</a>
+      </div>
+    </div>
+    <div class="col-9">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+<router-outlet *ngIf="!authenticated"></router-outlet>

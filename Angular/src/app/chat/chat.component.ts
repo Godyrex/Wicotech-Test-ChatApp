@@ -37,7 +37,9 @@ export class ChatComponent implements OnInit {
     });
 
     this.chatService.getMessages().subscribe(message => {
+      if(message.username != this.username){
       this.messages.push(message);
+      }
     });
   }
 
