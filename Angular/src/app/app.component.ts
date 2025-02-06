@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from './auth.service';
 
 @Component({
@@ -6,15 +6,24 @@ import { AuthService } from './auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'chat-app';
-  authenticated = this.authService.isAuthenticated();
-  username=this.authService.getUserName();
+  authenticated: boolean = false;
+  username: string = '';
+
+  ngOnInit() {
+    this.authService.getAuthenticationStatus().subscribe(isAuthenticated => {
+      this.authenticated = isAuthenticated;
+      if(this.authenticated) {
+        this.username =this.authService.getUserName();
+      }
+    });
+  }
   constructor(private authService:AuthService) {
 
   }
+  
   logout() {
     this.authService.logout();
-    this.authenticated = false;
   }
 }

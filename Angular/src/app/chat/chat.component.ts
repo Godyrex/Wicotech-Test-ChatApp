@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../chat.service';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import * as e from 'cors';
 
 @Component({
   selector: 'app-chat',
@@ -16,14 +17,18 @@ export class ChatComponent implements OnInit {
   constructor(private chatService: ChatService, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/']);
-    }
+    this.authService.getAuthenticationStatus().subscribe(isAuthenticated => {
+      console.log("User is authenticated: ", isAuthenticated);
+      if (!isAuthenticated) {
+        this.router.navigate(['/login']);
+      }
+    });
     this.username = this.authService.getUserName();
 
+    console.log("Fetching message history...");
     this.chatService.getMessageHistory().subscribe(messages => {
       this.messages = messages;
-      console.log("old messages : ",messages);
+      console.log("old messages : ", messages);
     });
 
     this.chatService.getMessages().subscribe(message => {

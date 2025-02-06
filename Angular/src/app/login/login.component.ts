@@ -23,9 +23,7 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
     if (this.username && this.password) {
       this.authService.login(this.username, this.password).subscribe({
-        next: (res: any) => {
-          this.authService.saveToken(res.token);
-          this.authService.saveUser({ username: res.username, id: res.id });
+        next: () => {
           this.router.navigate(['/chat']);
         },
         error: () => {
@@ -36,4 +34,5 @@ export class LoginComponent implements OnInit {
       this.errorMessage = 'Please enter username and password';
     }
   }
+
 }

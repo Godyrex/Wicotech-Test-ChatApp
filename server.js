@@ -60,10 +60,12 @@ app.post('/login', async (req, res) => {
 io.on('connection', (socket) => {
     console.log('New client connected');
 
-    Message.find().sort({ createdAt: 1 }).then(messages => {
-        socket.emit('messageHistory', messages);
-        console.log('Message history sent');
-    });
+    socket.on('requestMessageHistory', () => {
+        Message.find().sort({ createdAt: 1 }).then(messages => {
+          socket.emit('messageHistory', messages);
+          console.log('Message history sent');
+        });
+      });
 
     socket.on('sendMessage', async (data) => {
         const message = new Message({ username: data.username, text: data.text });
