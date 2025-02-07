@@ -3,9 +3,17 @@ const Message = require('./models/Message');
 
 module.exports = (server) => {
   const io = socketIo(server, { cors: { origin: '*' } });
+  const onlineUsers = new Map();
 
   io.on('connection', (socket) => {
     console.log('New client connected');
+
+    // Handle user connection
+    socket.on('userConnected', (username) => {
+      onlineUsers.set(socket.id, username);
+      io.emit('updateUserStatus', Array.from(onlineUsers.values()));
+      console.log('User connected:', username);
+    });
 
     socket.on('requestMessageHistory', () => {
       Message.find({ type: 'group' }).sort({ createdAt: 1 }).then(messages => {
@@ -46,13 +54,16 @@ module.exports = (server) => {
         return;
       }
       await message.save();
-      // io.to({from: data.from, to: data.to}).emit('receivePrivateMessage', message);
       io.emit('receivePrivateMessage', message);
       console.log('Private message sent:', message);
     });
 
+    // Handle user disconnection
     socket.on('disconnect', () => {
-      console.log('Client disconnected');
+      const username = onlineUsers.get(socket.id);
+      onlineUsers.delete(socket.id);
+      io.emit('updateUserStatus', Array.from(onlineUsers.values()));
+      console.log('Client disconnected:', username);
     });
   });
 };

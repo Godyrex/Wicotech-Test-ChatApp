@@ -16,7 +16,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   username = '';
   loading: boolean = true;
   private messageSubscription: Subscription | null = null;
-
   constructor(private chatService: ChatService, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
@@ -42,6 +41,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
 
     this.subscribeToMessages();
+    this.chatService.clearUnreadGroupMessages();
   }
 
   ngOnDestroy() {

@@ -6,3 +6,11 @@
   background-color: #007bff;
   border-color: #007bff;
 }
+.online-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: green;
+  border-radius: 50%;
+  margin-left: 5px;
+}

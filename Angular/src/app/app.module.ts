@@ -12,10 +12,22 @@ import { ChatComponent } from './chat/chat.component';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PrivateChatComponent } from './private-chat/private-chat.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, RegisterComponent, ChatComponent, PrivateChatComponent],
-  imports: [BrowserModule,CommonModule, RouterOutlet, RouterLink, AppRoutingModule, FormsModule, HttpClientModule],
+  imports: [
+    BrowserModule,
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule,
+    BrowserAnimationsModule, 
+    ToastrModule.forRoot()
+      ],
   providers: [ChatService, AuthService],
   bootstrap: [AppComponent],
 })

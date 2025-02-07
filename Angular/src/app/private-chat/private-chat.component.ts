@@ -34,6 +34,7 @@ export class PrivateChatComponent implements OnInit, OnDestroy {
       this.recipient = params['username'];
       this.requestPrivateMessageHistory();
       this.subscribeToMessages();
+      this.chatService.clearUnreadMessages(this.recipient);
     });
 
     console.log("Fetching private message history...");
