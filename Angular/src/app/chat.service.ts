@@ -9,14 +9,17 @@ import { Socket } from 'socket.io-client';
 export class ChatService {
   private socket: Socket | null = null;
   private messageHistorySubject = new BehaviorSubject<any[]>([]);
+  private messagesSubject = new BehaviorSubject<any>([]);
 
   constructor(private authService: AuthService) {
+    console.log('ChatService created');
     this.authService.getSocket().subscribe(socket => {
       this.socket = socket;
       if (this.socket) {
         console.log('Socket connected:', this.socket.connected);
         this.listenForMessageHistory();
         this.requestMessageHistory();
+        this.listenForMessages();
       } else {
         console.log('Socket is null');
       }
@@ -32,6 +35,15 @@ export class ChatService {
     }
   }
 
+  private listenForMessages() {
+    if (this.socket) {
+      this.socket.on('receiveMessage', (message) => {
+        this.messagesSubject.next(message);
+        console.log('Received message:', message);
+      });
+    }
+  }
+
   sendMessage(message: string, from: string) {
     if (this.socket) {
       this.socket.emit('sendMessage', { text: message, from });
@@ -39,11 +51,7 @@ export class ChatService {
   }
 
   getMessages(): Observable<any> {
-    return new Observable((observer) => {
-      if (this.socket) {
-        this.socket.on('receiveMessage', (message) => observer.next(message));
-      }
-    });
+    return this.messagesSubject.asObservable();
   }
 
   getMessageHistory(): Observable<any[]> {
@@ -54,5 +62,9 @@ export class ChatService {
     if (this.socket) {
       this.socket.emit('requestMessageHistory');
     }
+  }
+
+  clearMessages() {
+    this.messagesSubject.next([]);
   }
 }

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChatService } from '../chat.service';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import * as e from 'cors';
 
 @Component({
@@ -9,14 +10,18 @@ import * as e from 'cors';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   newMessage = '';
   username = '';
   loading: boolean = true;
+  private messageSubscription: Subscription | null = null;
+
   constructor(private chatService: ChatService, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
+    this.messages = [];
+    this.loading = true;
     this.authService.getAuthenticationStatus().subscribe(isAuthenticated => {
       console.log("User is authenticated: ", isAuthenticated);
       if (!isAuthenticated) {
@@ -36,9 +41,24 @@ export class ChatComponent implements OnInit {
       console.log("old messages : ", messages);
     });
 
-    this.chatService.getMessages().subscribe(message => {
-      if(message.username != this.username){
-      this.messages.push(message);
+    this.subscribeToMessages();
+  }
+
+  ngOnDestroy() {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
+  }
+
+  private subscribeToMessages() {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
+    this.chatService.clearMessages();
+    this.messageSubscription = this.chatService.getMessages().subscribe(message => {
+      if (message.from != null && message.from != this.username) {
+        console.log("New message: ", message);
+        this.messages.push(message);
       }
     });
   }
@@ -48,6 +68,7 @@ export class ChatComponent implements OnInit {
       console.log("Sending message: ", this.newMessage);
       console.log("Username: ", this.username);
       this.chatService.sendMessage(this.newMessage, this.username);
+      this.messages.push({ text: this.newMessage, from: this.username });
       this.newMessage = '';
     }
   }

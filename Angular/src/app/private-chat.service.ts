@@ -9,13 +9,16 @@ import { Socket } from 'socket.io-client';
 export class PrivateChatService {
   private socket: Socket | null = null;
   private privateMessageHistorySubject = new BehaviorSubject<any[]>([]);
+  private privateMessagesSubject = new BehaviorSubject<any>([]);
 
   constructor(private authService: AuthService) {
+    console.log('PrivateChatService created');
     this.authService.getSocket().subscribe(socket => {
       this.socket = socket;
       if (this.socket) {
         console.log('Socket connected:', this.socket.connected);
         this.listenForPrivateMessageHistory();
+        this.listenForPrivateMessages();
       } else {
         console.log('Socket is null');
       }
@@ -31,23 +34,23 @@ export class PrivateChatService {
     }
   }
 
+  private listenForPrivateMessages() {
+    if (this.socket) {
+      this.socket.on('receivePrivateMessage', (message) => {
+        this.privateMessagesSubject.next(message);
+        console.log('Received private message:', message);
+      });
+    }
+  }
+
   sendPrivateMessage(message: string, from: string, to: string) {
     if (this.socket) {
       this.socket.emit('sendPrivateMessage', { text: message, from, to });
     }
   }
 
-  getPrivateMessages(from: string, to: string): Observable<any> {
-    return new Observable((observer) => {
-      if (this.socket) {
-        this.socket.on('receivePrivateMessage', (message) => {
-          console.log('Received private message:', message);
-          if ((message.from === from && message.to === to) || (message.from === to && message.to === from)) {
-            observer.next(message);
-          }
-        });
-      }
-    });
+  getPrivateMessages(): Observable<any> {
+    return this.privateMessagesSubject.asObservable();
   }
 
   getPrivateMessageHistory(): Observable<any[]> {
@@ -59,5 +62,9 @@ export class PrivateChatService {
     if (this.socket) {
       this.socket.emit('requestPrivateMessageHistory', { from, to });
     }
+  }
+
+  clearPrivateMessages() {
+    this.privateMessagesSubject.next([]);
   }
 }

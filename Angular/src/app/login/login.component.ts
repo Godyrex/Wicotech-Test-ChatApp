@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/chat']);
+      this.router.navigate(['/group/chat']);
     }
   }
   login() {
@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     if (this.username && this.password) {
       this.authService.login(this.username, this.password).subscribe({
         next: () => {
-          this.router.navigate(['/chat']);
+          this.router.navigate(['/group/chat']);
         },
         error: () => {
           this.errorMessage = 'Invalid credentials';

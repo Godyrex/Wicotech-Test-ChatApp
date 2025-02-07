@@ -48,6 +48,7 @@ module.exports = (server) => {
       await message.save();
       // io.to({from: data.from, to: data.to}).emit('receivePrivateMessage', message);
       io.emit('receivePrivateMessage', message);
+      console.log('Private message sent:', message);
     });
 
     socket.on('disconnect', () => {
